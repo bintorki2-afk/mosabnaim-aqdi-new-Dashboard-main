@@ -12,8 +12,12 @@ const nextConfig = {
     optimizePackageImports: ["lucide-react", "react-icons"],
   },
   async rewrites() {
+    // NOTE (test deployment): default to the Railway TEST backend so the test
+    // dashboard never talks to production. A real API_PROXY_TARGET still wins.
+    // Revert to "https://aqid.subcodeco.com/api" before shipping to production.
     const apiTarget =
-      process.env.API_PROXY_TARGET || "https://aqid.subcodeco.com/api";
+      process.env.API_PROXY_TARGET ||
+      "https://aqdi-new-backend-main-production.up.railway.app/api";
 
     return [
       {
@@ -49,6 +53,11 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "aqid.subcodeco.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "aqdi-new-backend-main-production.up.railway.app",
         pathname: "/**",
       },
       {
