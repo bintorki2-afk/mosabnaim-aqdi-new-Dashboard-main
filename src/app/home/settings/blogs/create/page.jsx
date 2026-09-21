@@ -1,0 +1,26 @@
+"use client";
+
+import { useUnwrapPageProps } from "@/src/hooks/use-unwrap-page-props";
+import CreateBlogForm from "@/components/analysis/settings/blogs/create-blog-form";
+import {
+  SettingsContentCard,
+  SettingsListHeader,
+  SettingsPageShell,
+} from "@/components/system-settings/shared";
+
+export default function CreateBlogPage(props) {
+  useUnwrapPageProps(props?.params, props?.searchParams);
+
+  return (
+    <SettingsPageShell>
+      <SettingsListHeader
+        title="إضافة مقال جديد"
+        subtitle="أنشئ مقالاً جديداً وحدد وقت النشر أو احفظه كمسودة"
+        backHref="/home/settings/blogs"
+      />
+      <SettingsContentCard>
+        <CreateBlogForm />
+      </SettingsContentCard>
+    </SettingsPageShell>
+  );
+}

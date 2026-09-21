@@ -1,0 +1,96 @@
+"use client";
+
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import SettingsFormDialog, {
+  SettingsFieldLabel,
+  settingsFieldClass,
+} from "@/components/system-settings/settings-form-dialog";
+import { SettingsAddTrigger } from "@/components/system-settings/shared";
+import { axiosInstance } from "@/src/utils/axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+export default function AddNewCityDialog() {
+  const [open, setOpen] = useState(false);
+  const [cityName, setCityName] = useState("");
+  const [regionType, setRegionType] = useState("");
+  const queryClient = useQueryClient();
+
+  const { data: regions } = useQuery({
+    queryKey: ["regions"],
+    queryFn: () => axiosInstance.get("/admin/regions"),
+  });
+  const data = regions?.data?.data?.items;
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: () =>
+      axiosInstance.post("/admin/cities", {
+        name_ar: cityName,
+        region_id: regionType,
+      }),
+    onSuccess: (res) => {
+      toast.success(res?.data?.message || "تم إضافة مدينة بنجاح");
+      setOpen(false);
+      setCityName("");
+      setRegionType("");
+      queryClient.invalidateQueries({ queryKey: ["cities"] });
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message || "حدث خطأ أثناء إضافة مدينة");
+    },
+  });
+
+  const handleSubmit = () => {
+    if (!cityName.trim() || !regionType) {
+      toast.error("يرجى ملء جميع الحقول المطلوبة");
+      return;
+    }
+    mutate();
+  };
+
+  return (
+    <SettingsFormDialog
+      open={open}
+      onOpenChange={setOpen}
+      trigger={<SettingsAddTrigger />}
+      title="عنصر جديد"
+      onSubmit={handleSubmit}
+      submitLabel="حفظ"
+      isPending={isPending}
+    >
+      <label className="flex flex-col gap-1.5">
+        <SettingsFieldLabel required>اسم المدينة</SettingsFieldLabel>
+        <Input
+          placeholder="اكتب هنا ..."
+          value={cityName}
+          onChange={(e) => setCityName(e.target.value)}
+          className={settingsFieldClass}
+        />
+      </label>
+
+      <label className="flex flex-col gap-1.5">
+        <SettingsFieldLabel required>المنطقة</SettingsFieldLabel>
+        <Select dir="rtl" value={regionType || undefined} onValueChange={setRegionType}>
+          <SelectTrigger className={settingsFieldClass}>
+            <SelectValue placeholder="اختر المنطقة" />
+          </SelectTrigger>
+          <SelectContent dir="rtl">
+            {data?.map((region) => (
+              <SelectItem key={region.id} value={String(region.id)}>
+                {region.name_ar}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </label>
+    </SettingsFormDialog>
+  );
+}
