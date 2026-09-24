@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import Loader from "@/components/home/loader";
-import { cn } from "@/lib/utils";
+import { cn, safeInternalPath } from "@/lib/utils";
 import { useClientDetail } from "@/src/hooks/use-clients";
 import {
   useAssignClientCoupon,
@@ -29,7 +29,7 @@ export default function ClientDiscountWrapper() {
   const router = useRouter();
   const clientId = params?.userId;
   const from = searchParams.get("from") || `/home/users/${clientId}`;
-  const backUrl = from.startsWith("/") ? from : `/home/users/${clientId}`;
+  const backUrl = safeInternalPath(from, `/home/users/${clientId}`);
 
   const { client, isLoading: isClientLoading } = useClientDetail(clientId);
   const { coupons, activeCoupon, isLoading: isCouponsLoading } = useClientCoupons(clientId);

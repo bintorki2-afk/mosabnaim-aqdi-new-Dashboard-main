@@ -7,7 +7,7 @@ import {
   Eye,
   LayoutGrid,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, safeInternalPath } from "@/lib/utils";
 import Loader from "@/components/home/loader";
 import { useClientProperties } from "@/src/hooks/use-clients";
 
@@ -230,8 +230,10 @@ export default function ClientPropertiesWrapper() {
 
   const fromParam = searchParams.get("from");
   const backUrl = useMemo(() => {
-    if (fromParam?.startsWith("/")) return fromParam;
-    return `/home/users/${clientId}?from=${encodeURIComponent("/home/clients")}`;
+    return safeInternalPath(
+      fromParam,
+      `/home/users/${clientId}?from=${encodeURIComponent("/home/clients")}`
+    );
   }, [fromParam, clientId]);
 
   const { client, properties, totals, isLoading, isError } =

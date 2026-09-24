@@ -2,6 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import parse from "html-react-parser";
+import { sanitizeHtml } from "@/src/lib/sanitize-html";
 import { getTenantRoleLabel, useTenantRoles } from "@/src/hooks/use-tenant-roles";
 import { parseTenantRoleIds } from "@/src/lib/contract-update";
 import { inputClass } from "./field-styles";
@@ -88,7 +89,7 @@ export default function TenantRolesMultiField({ formValues, onPatch, fieldErrors
                   </span>
                   {role.service_definition ? (
                     <div className="mt-1 text-xs text-neutral-500 dark:text-white/50 leading-relaxed [&_p]:mb-1 [&_p:last-child]:mb-0 [&_*]:!text-xs [&_*]:!leading-relaxed">
-                      {parse(String(role.service_definition))}
+                      {parse(sanitizeHtml(String(role.service_definition)))}
                     </div>
                   ) : null}
                 </span>

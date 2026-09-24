@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, Home } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, safeInternalPath } from "@/lib/utils";
 import Loader from "@/components/home/loader";
 import { useClientDetail, useBlockClient, useDeleteClient } from "@/src/hooks/use-clients";
 import { classifyOrderStatus, formatJoinedLabel } from "./client-details/client-details-format";
@@ -19,7 +19,7 @@ export default function ClientDetailsWrapper() {
   const router = useRouter();
   const clientId = params?.userId;
   const from = searchParams.get("from") || "/home/clients";
-  const backUrl = from.startsWith("/") ? from : "/home/clients";
+  const backUrl = safeInternalPath(from, "/home/clients");
 
   const { client, contracts, isLoading, isError } = useClientDetail(clientId);
   const { mutate: toggleBlock, isPending: isBlocking } = useBlockClient();

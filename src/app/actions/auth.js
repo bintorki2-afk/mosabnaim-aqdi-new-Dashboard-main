@@ -9,9 +9,11 @@ const SNAPSHOT_COOKIE = 'auth_snapshot';
 function cookieOptions(remember = true) {
   const options = {
     path: '/',
-    sameSite: 'lax',
+    sameSite: 'strict',
     secure: process.env.NODE_ENV === 'production',
-    httpOnly: false,
+    // Gate cookies are read only server-side (src/proxy.js). Keep them out of
+    // JavaScript so an XSS payload cannot forge or read the session gate.
+    httpOnly: true,
   };
 
   if (remember) {

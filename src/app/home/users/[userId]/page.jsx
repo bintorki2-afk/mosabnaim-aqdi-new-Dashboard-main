@@ -7,6 +7,7 @@ import UserContractsTable from "@/components/analysis/users-analysis/user-contra
 import Header from "@/components/home/header";
 import Loader from "@/components/home/loader";
 import { axiosInstance } from "@/src/utils/axios";
+import { safeInternalPath } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
 
@@ -30,9 +31,10 @@ export default function UserDetailsPage(props) {
 }
 
 function LegacyUserDetailsPage({ userId, from }) {
-  const backUrl = from.startsWith("/")
-    ? from
-    : `/home/reports?tab=users&segment=${from}`;
+  const backUrl = safeInternalPath(
+    from,
+    `/home/reports?tab=users&segment=${encodeURIComponent(from)}`
+  );
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["user", String(userId)],

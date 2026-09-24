@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Pencil } from "lucide-react";
+import { sanitizeHtml } from "@/src/lib/sanitize-html";
 
 const formatDate = (dateString) => {
   if (!dateString) return "---";
@@ -100,7 +101,7 @@ export default function BlogDetails({ blog }) {
         <p className="text-sm font-bold text-black mb-4 dark:text-white">محتوى المقال</p>
         <div
           className="prose prose-sm max-w-none text-ink-subtle leading-relaxed dark:text-white/70 [&_img]:max-w-full [&_img]:rounded-xl"
-          dangerouslySetInnerHTML={{ __html: blog?.description || "" }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(blog?.description) }}
         />
       </div>
 
