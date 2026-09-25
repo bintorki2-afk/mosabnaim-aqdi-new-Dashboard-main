@@ -210,6 +210,7 @@ export const ROUTE_SECTION_RULES = [
   { prefix: '/home/marketing-and-content', section: MARKETING_SECTIONS },
   { prefix: '/home/clients', section: null },
   { prefix: '/home/leads', section: null },
+  { prefix: '/home/website-orders', section: null },
   { prefix: '/home/realtime-orders', section: REALTIME_ORDERS_SECTIONS },
   { prefix: '/home/invoices', section: null },
   // Legacy URL — page redirects into marketing content tab; keep gate for deep links.
@@ -267,6 +268,7 @@ export const SIDEBAR_NAV = [
       { label: 'الطلبات مباشر', href: '/home/realtime-orders', section: REALTIME_ORDERS_SECTIONS, badge: 'unreceived' },
       { label: 'العملاء', href: '/home/clients', section: null },
       { label: 'العملاء المحتملون', href: '/home/leads', section: null },
+      { label: 'طلبات الموقع', href: '/home/website-orders', section: null },
       { label: 'طلبات الاسترجاع', href: '/home/return-orders', section: PERMISSION_SECTIONS.returned_request, badge: 'returned' },
       { label: 'الموظفون والأدوار', href: '/home/roles-and-employees', section: ROLES_AND_EMPLOYEES_SECTIONS },
       { label: 'التسويق والمحتوى', href: '/home/marketing-and-content', section: MARKETING_SECTIONS },
