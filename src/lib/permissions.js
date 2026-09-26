@@ -47,6 +47,27 @@ export const PERMISSION_SECTIONS = {
 
 export const PERMISSION_ACTIONS = ['view', 'create', 'edit', 'delete', 'retrieve'];
 
+/**
+ * أعلام الميزات (Feature flags) — عقد إيجار.
+ * الميزات المُخفاة مؤقتًا (لا توجد بوابة دفع بعد). لا يتم حذف أي كود؛ فقط إخفاء.
+ * الإخفاء يشمل: رابط القائمة الجانبية + بوابة المسار (منع الدخول المباشر عبر الرابط) + صفحة الهبوط الأولى.
+ * لإعادة تفعيل ميزة مستقبلًا: احذف مسارها من DISABLED_FEATURE_PREFIXES فقط.
+ */
+export const DISABLED_FEATURE_PREFIXES = [
+  '/home/return-orders', // طلبات الاسترجاع (لا يوجد استرجاع بدون بوابة دفع)
+  '/home/invoices',      // الفواتير
+  '/home/leads',         // العملاء المحتملون
+];
+
+/** true إذا كان المسار (أو الـ href) يخص ميزة مُخفاة. */
+export function isFeatureDisabled(pathOrHref = '') {
+  if (!pathOrHref) return false;
+  const path = String(pathOrHref).split('?')[0];
+  return DISABLED_FEATURE_PREFIXES.some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`)
+  );
+}
+
 function matrixToPermissionNames(matrix) {
   if (!matrix || typeof matrix !== 'object') return [];
 
@@ -250,6 +271,9 @@ export function getRouteActionRequirement(pathname = '') {
 }
 
 export function canAccessRoute(pathname, permissions, user) {
+  // ميزات مُخفاة: امنع الدخول حتى للمسؤول (super admin) — الإخفاء مقصود لا صلاحية.
+  if (isFeatureDisabled(pathname)) return false;
+
   const actionReq = getRouteActionRequirement(pathname);
   if (actionReq) {
     return canAccess(permissions, user, actionReq.section, actionReq.action);
@@ -286,6 +310,7 @@ export const SIDEBAR_NAV = [
 export function getFirstAllowedHref(permissions, user) {
   for (const group of SIDEBAR_NAV) {
     for (const item of group.items) {
+      if (isFeatureDisabled(item.href)) continue;
       if (canAccess(permissions, user, item.section, 'view')) {
         return item.href;
       }
