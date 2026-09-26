@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getSectionForPath } from '@/src/lib/permissions';
+import { getSectionForPath, isFeatureDisabled } from '@/src/lib/permissions';
 import {
   canAccessRouteFromSnapshot,
   getFirstAllowedHrefFromSnapshot,
@@ -23,6 +23,13 @@ export function proxy(request) {
 
     const snapshot = parseAuthSnapshot(request.cookies.get('auth_snapshot')?.value);
     const section = getSectionForPath(pathname);
+
+    // ميزات مُخفاة (عقد إيجار): أعِد التوجيه دائمًا حتى لو كان القسم null أو المستخدم مسؤولًا.
+    if (isFeatureDisabled(pathname)) {
+      const fallback = getFirstAllowedHrefFromSnapshot(snapshot);
+      const target = fallback && fallback !== pathname ? fallback : '/home';
+      return NextResponse.redirect(new URL(target, request.url));
+    }
 
     if (snapshot && section !== null && !canAccessRouteFromSnapshot(pathname, snapshot)) {
       const fallback = getFirstAllowedHrefFromSnapshot(snapshot);
