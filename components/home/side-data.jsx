@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 import { useLogout } from "@/src/hooks/use-logout";
 import { usePermissions } from "@/src/hooks/use-permissions";
-import { SIDEBAR_NAV } from "@/src/lib/permissions";
+import { SIDEBAR_NAV, isFeatureDisabled } from "@/src/lib/permissions";
 import {
   BarChart3,
   ClipboardList,
@@ -111,7 +111,9 @@ export default function SideData() {
 
   const visibleNav = SIDEBAR_NAV.map((group) => ({
     ...group,
-    items: group.items.filter((item) => isReady && can(item.section, 'view')),
+    items: group.items.filter(
+      (item) => !isFeatureDisabled(item.href) && isReady && can(item.section, 'view')
+    ),
   })).filter((group) => group.items.length > 0);
 
   const isCollapsed = !isSidebarOpen;
